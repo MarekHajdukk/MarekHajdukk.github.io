@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OgroDeck - Moje Rośliny</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo"><i class="fas fa-seedling"></i> OgroDeck</div>
+    <nav>
+      <a href="home.html" class="tab-link"><i class="fas fa-home"></i> Strona główna</a>
+      <a href="plants.html" class="tab-link active"><i class="fas fa-leaf"></i> Moje rośliny</a>
+      <a href="calendar.html" class="tab-link"><i class="fas fa-calendar-alt"></i> Kalendarz</a>
+      <a href="settings.html" class="tab-link"><i class="fas fa-cog"></i> Ustawienia</a>
+    </nav>
+  </aside>
+
+  <div class="main-content-wrapper">
+    <div class="container" id="plants" style="display: block;">
+      <header class="page-header">
+        <h2><i class="fas fa-leaf"></i>Moje Rośliny</h2>
+        <div class="user-menu">Zalogowany jako: <strong>Admin</strong> <a href="login.html" class="logout-link">Wyloguj</a></div>
+      </header>
+      <a href="add-plant.html" class="button" style="margin-bottom: 25px;"><i class="fas fa-plus"></i> Dodaj Roślinę</a>
+      <div class="plant-cards">
+        <!-- Karty roślin będą generowane dynamicznie przez JavaScript -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal dla szczegółów rośliny -->
+  <div class="modal-overlay" id="plant-details-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="close-plant-details"><i class="fas fa-times"></i></button>
+      <div id="plant-details-content">
+        <!-- Zawartość modalu będzie generowana dynamicznie przez JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Sprawdź, czy użytkownik jest zalogowany
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+      if (!isLoggedIn) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Renderuj karty roślin przy załadowaniu strony
+      renderPlantCards();
+      
+      // Dodaj obsługę przycisków podlewania i szczegółów
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.water-plant')) {
+          const button = e.target.closest('.water-plant');
+          const plantId = button.getAttribute('data-id');
+          waterPlant(plantId);
+        } else if (e.target.closest('.plant-details')) {
+          const button = e.target.closest('.plant-details');
+          const plantId = button.getAttribute('data-id');
+          showPlantDetails(plantId);
+        }
+      });
+      
+      // Obsługa zamykania modalu
+      const closeModalButton = document.getElementById('close-plant-details');
+      if (closeModalButton) {
+        closeModalButton.addEventListener('click', function() {
+          const modal = document.getElementById('plant-details-modal');
+          modal.classList.remove('active');
+        });
+      }
+      
+      // Zamykanie modalu po kliknięciu poza jego zawartością
+      const modal = document.getElementById('plant-details-modal');
+      if (modal) {
+        modal.addEventListener('click', function(e) {
+          if (e.target === this) {
+            this.classList.remove('active');
+          }
+        });
+      }
+      
+      // Obsługa wylogowania
+      document.querySelector('.logout-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('username');
+        window.location.href = 'login.html';
+      });
+    });
+  </script>
+</body>
+</html>

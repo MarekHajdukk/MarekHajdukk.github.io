@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OgroDeck - Logowanie</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: var(--bg-color);
+    }
+    
+    .login-box {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--card-shadow);
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    
+    .login-logo {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .form-group {
+      text-align: left;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-color);
+      font-weight: 600;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+    
+    .login-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 1rem;
+    }
+    
+    .login-btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .error-message {
+      color: var(--error-color, #e74c3c);
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <div class="login-logo">
+        <i class="fas fa-seedling"></i>
+        <span>OgroDeck</span>
+      </div>
+      <h2>Zaloguj się do aplikacji</h2>
+      <p>Wprowadź swoje dane logowania, aby kontynuować</p>
+      
+      <form id="login-form" class="login-form">
+        <div class="form-group">
+          <label for="username">Nazwa użytkownika</label>
+          <input type="text" id="username" name="username" placeholder="Wprowadź nazwę użytkownika" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Hasło</label>
+          <input type="password" id="password" name="password" placeholder="Wprowadź hasło" required>
+        </div>
+        
+        <div id="error-message" class="error-message">
+          Nieprawidłowa nazwa użytkownika lub hasło. Spróbuj ponownie.
+        </div>
+        
+        <button type="submit" class="login-btn">Zaloguj się</button>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginForm = document.getElementById('login-form');
+      const errorMessage = document.getElementById('error-message');
+      
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        // Sprawdź czy dane logowania są poprawne
+        if (username === 'admin' && password === 'admin') {
+          // Zapisz informację o zalogowaniu
+          sessionStorage.setItem('isLoggedIn', 'true');
+          sessionStorage.setItem('username', username);
+          
+          // Przekieruj do strony głównej
+          window.location.href = 'home.html';
+        } else {
+          // Pokaż komunikat o błędzie
+          errorMessage.style.display = 'block';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
