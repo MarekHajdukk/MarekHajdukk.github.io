@@ -181,49 +181,135 @@
   
   .calendar-placeholder {
     background-color: var(--card-bg);
-    padding: 1rem;
+    padding: 1.5rem;
     text-align: center;
     border-radius: var(--border-radius);
     border: 1px solid #E0E0E0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    min-height: 300px;
   }
   .calendar-placeholder table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 3px;
     margin-top: 15px;
   }
   .calendar-placeholder th,
   .calendar-placeholder td {
-    padding: 10px;
-    border: 1px solid #E0E0E0;
+    padding: 12px;
+    border: none;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
   }
   .calendar-placeholder th {
     background-color: var(--accent-green);
-    color: var(--text-color); /* Ciemny tekst na jaśniejszym tle */
+    color: white; /* Biały tekst dla lepszego kontrastu */
     font-weight: bold;
+    padding: 14px 10px;
+    font-family: var(--font-headings);
+    letter-spacing: 0.5px;
+  }
+  .calendar-placeholder td {
+    background-color: #f5f5f5;
+    transition: all 0.2s ease;
+  }
+  .calendar-placeholder td:hover {
+    background-color: #E8F5E9;
+    transform: scale(1.05);
+    cursor: pointer;
   }
   .calendar-placeholder td.today {
     background-color: var(--primary-green);
     color: white;
     font-weight: bold;
-    border-radius: 50%; /* Zachowujemy okrągły znacznik */
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
   }
+  .calendar-placeholder .calendar-header {
+    font-family: var(--font-headings);
+    font-size: 1.3em;
+    font-weight: 600;
+    color: var(--cta-color);
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  /* Tooltip dla wydarzeń w kalendarzu */
+  .event-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    min-width: 200px;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .event-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #ddd transparent transparent transparent;
+  }
+  
+  .event-item {
+    padding: 5px 0;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .event-item:last-child {
+    border-bottom: none;
+  }
+  
+  .event-item i {
+    margin-right: 5px;
+  }
+
   .calendar-placeholder td.has-event {
-    background-color: #C8E6C9; /* Jasny zielony dla wydarzeń */
+    background-color: #E8F5E9; /* Jaśniejszy zielony dla wydarzeń */
     position: relative;
+    font-weight: 600;
   }
-  .calendar-placeholder td.has-event::after {
-      content: '';
-      display: block;
-      width: 6px;
-      height: 6px;
-      background-color: var(--cta-color); /* Ciemniejsza kropka */
-      border-radius: 50%;
-      position: absolute;
-      bottom: 4px;
-      left: 50%;
-      transform: translateX(-50%);
+
+  .calendar-placeholder td .event-icon {
+    font-size: 0.8em;
+    margin: 2px;
+    display: inline-block;
+  }
+
+  .calendar-placeholder td .watering-icon {
+    color: #2196F3; /* Niebieski dla podlewania */
+  }
+
+  .calendar-placeholder td .fertilizing-icon {
+    color: #8BC34A; /* Zielony dla nawożenia */
+  }
+
+  .calendar-legend {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    font-size: 0.85em;
+  }
+
+  .calendar-legend .legend-item {
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  .calendar-legend .legend-item i {
+    margin-right: 5px;
   }
   
   .button, input[type="submit"], button {
@@ -394,6 +480,211 @@
       margin-top: 10px;
   }
   
+  /* Modal dla szczegółów rośliny */
+  .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  
+  .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+  }
+  
+  .modal-content {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 25px;
+      position: relative;
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+  }
+  
+  .modal-overlay.active .modal-content {
+      transform: translateY(0);
+  }
+  
+  .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #777;
+      padding: 5px;
+      transition: color 0.2s ease;
+  }
+  
+  .modal-close:hover {
+      color: var(--danger-color);
+  }
+  
+  .plant-details-header {
+      display: flex;
+      margin-bottom: 20px;
+      align-items: center;
+  }
+  
+  .plant-details-image {
+      width: 150px;
+      height: 150px;
+      border-radius: var(--border-radius);
+      object-fit: cover;
+      margin-right: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .plant-details-title {
+      flex-grow: 1;
+  }
+  
+  .plant-details-title h2 {
+      font-family: var(--font-headings);
+      color: var(--cta-color);
+      margin: 0 0 10px 0;
+      font-size: 1.8em;
+  }
+  
+  .plant-details-title p {
+      margin: 5px 0;
+      color: #555;
+  }
+  
+  .plant-details-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+  }
+  
+  .plant-details-info-item {
+      background-color: #f5f5f5;
+      padding: 12px 15px;
+      border-radius: var(--border-radius);
+      border-left: 3px solid var(--primary-green);
+  }
+  
+  .plant-details-info-item h3 {
+      font-family: var(--font-headings);
+      color: var(--cta-color);
+      margin: 0 0 8px 0;
+      font-size: 1em;
+      display: flex;
+      align-items: center;
+  }
+  
+  .plant-details-info-item h3 i {
+      margin-right: 8px;
+      color: var(--primary-green);
+  }
+  
+  .plant-details-info-item p {
+      margin: 0;
+      font-size: 0.9em;
+  }
+  
+  .plant-details-notes {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 20px;
+  }
+  
+  .plant-details-notes h3 {
+      font-family: var(--font-headings);
+      color: var(--cta-color);
+      margin: 0 0 10px 0;
+      font-size: 1.1em;
+      display: flex;
+      align-items: center;
+  }
+  
+  .plant-details-notes h3 i {
+      margin-right: 8px;
+      color: var(--primary-green);
+  }
+  
+  .plant-details-notes p {
+      margin: 0;
+      font-size: 0.9em;
+      line-height: 1.5;
+      white-space: pre-line;
+  }
+  
+  .plant-details-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+  }
+  
+  /* Style dla formularza edycji rośliny w modalu */
+  .plant-edit-form {
+      display: none;
+  }
+  
+  .plant-edit-form.active {
+      display: block;
+  }
+  
+  .plant-details-view.hidden {
+      display: none;
+  }
+  
+  .plant-edit-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #BDBDBD;
+      border-radius: var(--border-radius);
+      box-sizing: border-box;
+      font-family: var(--font-main);
+      font-size: 0.9em;
+      resize: vertical;
+      min-height: 80px;
+  }
+  
+  .plant-edit-form textarea:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
+  }
+  
+  .plant-edit-form .form-row {
+      margin-bottom: 15px;
+  }
+  
+  .plant-edit-form .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+  }
+  
+  .plant-edit-form .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+  }
+
   /* Styl dla add-plant.html */
   .add-plant-container {
       width: 100%;

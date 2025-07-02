@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dodaj roślinę</title>
+  <title>OgroDeck - Dodaj roślinę</title>
   <link rel="stylesheet" href="style.css">
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,14 +11,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Dołączenie głównego skryptu aplikacji -->
+  <script defer src="script.js"></script>
 </head>
 <body>
-  <div class="add-plant-container">
-    <header>
-      <h1><i class="fas fa-plus-circle" style="margin-right:10px; color:var(--primary-green);"></i>Dodaj Nową Roślinę</h1>
-    </header>
-    <div class="section">
-      <form id="plant-form">
+  <aside class="sidebar">
+    <div class="logo"><i class="fas fa-seedling"></i> OgroDeck</div>
+    <nav>
+      <a href="home.html" class="tab-link"><i class="fas fa-home"></i> Strona główna</a>
+      <a href="plants.html" class="tab-link active"><i class="fas fa-leaf"></i> Moje rośliny</a>
+      <a href="calendar.html" class="tab-link"><i class="fas fa-calendar-alt"></i> Kalendarz</a>
+      <a href="settings.html" class="tab-link"><i class="fas fa-cog"></i> Ustawienia</a>
+    </nav>
+  </aside>
+
+  <div class="main-content-wrapper">
+    <div class="container" style="display: block;">
+      <header class="page-header">
+        <h2><i class="fas fa-plus-circle"></i>Dodaj Nową Roślinę</h2>
+        <div class="user-menu">Zalogowany jako: <strong>Admin</strong> <a href="login.html" class="logout-link">Wyloguj</a></div>
+      </header>
+      <div class="section">
+        <form id="plant-form">
         <label for="plant-name">Nazwa rośliny:</label>
         <input type="text" id="plant-name" name="plant-name" placeholder="np. Monstera Deliciosa" required>
         
@@ -45,12 +59,39 @@
 
         <div class="form-actions">
             <button type="submit" class="button"><i class="fas fa-save"></i> Zapisz roślinę</button>
-            <a href="index.html#plants" class="button secondary"><i class="fas fa-arrow-left"></i> Wróć do listy</a>
+            <a href="plants.html" class="button secondary"><i class="fas fa-arrow-left"></i> Wróć do listy</a>
         </div>
       </form>
     </div>
   </div>
+</div>
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Sprawdź, czy użytkownik jest zalogowany
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+      if (!isLoggedIn) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Obsługa wylogowania
+      document.querySelector('.logout-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('username');
+        window.location.href = 'login.html';
+      });
+      
+      // Obsługa formularza dodawania rośliny
+      const plantForm = document.getElementById('plant-form');
+      plantForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Tutaj logika dodawania rośliny
+        alert('Roślina została dodana (symulacja)');
+        window.location.href = 'plants.html';
+      });
+    });
+    
     // Skrypt do podglądu obrazka przed wysłaniem (lokalny dla tej strony)
     const plantImageInput = document.getElementById('plant-image');
     const imagePreview = document.getElementById('image-preview');
