@@ -16,6 +16,7 @@ function savePlants(plants) {
 // Funkcja do pobierania danych roślin z localStorage
 function getPlants() {
     const plants = localStorage.getItem('ogroDeckPlants');
+    console.log('Pobrane dane roślin z localStorage:', plants);
     return plants ? JSON.parse(plants) : [];
 }
 
@@ -29,6 +30,174 @@ function calculateNextDate(date, days) {
     const nextDate = new Date(date);
     nextDate.setDate(nextDate.getDate() + parseInt(days));
     return nextDate.toLocaleDateString('pl-PL');
+}
+
+// Funkcja do generowania powiadomień o nadchodzących wydarzeniach
+function generateNotifications() {
+    const plants = getPlants();
+    const today = new Date();
+    const notifications = [];
+    
+    plants.forEach(plant => {
+        // Sprawdź podlewanie
+        if (plant.wateringFrequency) {
+            let nextWateringDate;
+            
+            if (plant.lastWatered) {
+                nextWateringDate = calculateNextEvent(new Date(plant.lastWatered), plant.wateringFrequency);
+            } else if (plant.createdAt) {
+                nextWateringDate = calculateNextEvent(new Date(plant.createdAt), plant.wateringFrequency);
+            } else {
+                nextWateringDate = calculateNextEvent(new Date(), plant.wateringFrequency);
+            }
+            
+            if (nextWateringDate) {
+                const daysUntilWatering = Math.ceil((nextWateringDate - today) / (1000 * 60 * 60 * 24));
+                
+                if (daysUntilWatering >= 0 && daysUntilWatering <= 7) {
+                    let message = '';
+                    if (daysUntilWatering === 0) {
+                        message = `Podlewanie rośliny ${plant.name} dzisiaj`;
+                    } else if (daysUntilWatering === 1) {
+                        message = `Podlewanie rośliny ${plant.name} jutro`;
+                    } else {
+                        message = `Podlewanie rośliny ${plant.name} za ${daysUntilWatering} dni`;
+                    }
+                    
+                    notifications.push({
+                        type: 'watering',
+                        message: message,
+                        plantId: plant.id,
+                        daysUntil: daysUntilWatering
+                    });
+                }
+            }
+        }
+        
+        // Sprawdź nawożenie
+        if (plant.fertilizingFrequency) {
+            let nextFertilizingDate;
+            
+            if (plant.lastFertilized) {
+                nextFertilizingDate = calculateNextEvent(new Date(plant.lastFertilized), plant.fertilizingFrequency);
+            } else if (plant.createdAt) {
+                nextFertilizingDate = calculateNextEvent(new Date(plant.createdAt), plant.fertilizingFrequency);
+            } else {
+                nextFertilizingDate = calculateNextEvent(new Date(), plant.fertilizingFrequency);
+            }
+            
+            if (nextFertilizingDate) {
+                const daysUntilFertilizing = Math.ceil((nextFertilizingDate - today) / (1000 * 60 * 60 * 24));
+                
+                if (daysUntilFertilizing >= 0 && daysUntilFertilizing <= 7) {
+                    let message = '';
+                    if (daysUntilFertilizing === 0) {
+                        message = `Nawożenie rośliny ${plant.name} dzisiaj`;
+                    } else if (daysUntilFertilizing === 1) {
+                        message = `Nawożenie rośliny ${plant.name} jutro`;
+                    } else {
+                        message = `Nawożenie rośliny ${plant.name} za ${daysUntilFertilizing} dni`;
+                    }
+                    
+                    notifications.push({
+                        type: 'fertilizing',
+                        message: message,
+                        plantId: plant.id,
+                        daysUntil: daysUntilFertilizing
+                    });
+                }
+            }
+        }
+    });
+    
+    // Sortuj powiadomienia według liczby dni do wydarzenia
+    notifications.sort((a, b) => a.daysUntil - b.daysUntil);
+    
+    return notifications;
+}
+
+// Funkcja do wyświetlania powiadomień na stronie głównej
+function displayNotifications() {
+    // Priorytetowo szukamy kontenera po ID, a dopiero potem po klasie
+    const remindersContainer = document.getElementById('notifications-container') || document.querySelector('.reminders');
+    if (!remindersContainer) {
+        console.error('Nie znaleziono kontenera powiadomień');
+        return;
+    }
+    
+    const notifications = generateNotifications();
+    console.log('Wygenerowane powiadomienia:', notifications);
+    
+    // Wyczyść kontener powiadomień
+    remindersContainer.innerHTML = '';
+    
+    if (notifications.length === 0) {
+        remindersContainer.innerHTML = '<li class="reminder-item"><div>Brak nadchodzących wydarzeń</div></li>';
+        return;
+    }
+    
+    // Wyświetl maksymalnie 5 powiadomień
+    const notificationsToShow = notifications.slice(0, 5);
+    
+    notificationsToShow.forEach(notification => {
+        const reminderItem = document.createElement('li');
+        reminderItem.className = 'reminder-item';
+        
+        const icon = notification.type === 'watering' ? 'fa-tint' : 'fa-prescription-bottle-alt';
+        
+        reminderItem.innerHTML = `
+            <div><i class="fas ${icon} reminder-icon"></i> ${notification.message}</div>
+            <button class="button secondary small notification-action" data-type="${notification.type}" data-id="${notification.plantId}">Zrobione</button>
+        `;
+        
+        remindersContainer.appendChild(reminderItem);
+    });
+    
+    // Dodaj obsługę przycisków "Zrobione"
+    document.querySelectorAll('.notification-action').forEach(button => {
+        button.addEventListener('click', function() {
+            const plantId = this.getAttribute('data-id');
+            const type = this.getAttribute('data-type');
+            
+            if (type === 'watering') {
+                waterPlant(plantId);
+            } else if (type === 'fertilizing') {
+                fertilizePlant(plantId);
+            }
+            
+            // Odśwież powiadomienia
+            displayNotifications();
+        });
+    });
+}
+    document.querySelectorAll('.notification-action').forEach(button => {
+        button.addEventListener('click', function() {
+            const plantId = this.getAttribute('data-id');
+            const type = this.getAttribute('data-type');
+            
+            if (type === 'watering') {
+                waterPlant(plantId);
+            } else if (type === 'fertilizing') {
+                fertilizePlant(plantId);
+            }
+            
+            // Odśwież powiadomienia
+            displayNotifications();
+        });
+    });
+
+
+// Funkcja do nawożenia rośliny
+function fertilizePlant(plantId) {
+    const plants = getPlants();
+    const plantIndex = plants.findIndex(p => p.id === plantId);
+    
+    if (plantIndex !== -1) {
+        plants[plantIndex].lastFertilized = new Date().toISOString();
+        savePlants(plants);
+        renderPlantCards(); // Odśwież karty
+        alert(`Roślina ${plants[plantIndex].name} została nawożona!`);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -56,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateWeatherLocationDisplay();
         simulateWeatherLoad();
         setTimeout(() => generateCalendar('calendar-home'), 100);
+        setTimeout(() => displayNotifications(), 200);
     } else if (currentPage === 'plants.html') {
         // Strona z roślinami
         renderPlantCards();
@@ -128,6 +298,20 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(`Roślina ${plants[plantIndex].name} została podlana!`);
         }
     }
+    
+    // Funkcja do usuwania rośliny
+    function deletePlant(plantId) {
+        const plants = getPlants();
+        const plantIndex = plants.findIndex(p => p.id === plantId);
+        
+        if (plantIndex !== -1) {
+            const plantName = plants[plantIndex].name;
+            plants.splice(plantIndex, 1);
+            savePlants(plants);
+            renderPlantCards(); // Odśwież karty
+            alert(`Roślina ${plantName} została usunięta!`);
+        }
+    }
 
     // Inicjalizacja kart roślin przy ładowaniu strony
     // Wywołujemy renderPlantCards bezpośrednio, aby upewnić się, że karty są wyświetlane
@@ -189,6 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="plant-details-actions">
                     <button class="button edit-plant" data-id="${plant.id}"><i class="fas fa-edit"></i> Edytuj</button>
                     <button class="button secondary water-plant" data-id="${plant.id}"><i class="fas fa-tint"></i> Podlej</button>
+                    <button class="button danger delete-plant" data-id="${plant.id}"><i class="fas fa-trash"></i> Usuń</button>
                     <button class="button modal-close-btn"><i class="fas fa-times"></i> Zamknij</button>
                 </div>
             </div>
@@ -306,6 +491,16 @@ document.addEventListener('DOMContentLoaded', () => {
             waterPlant(plantId);
             // Odśwież zawartość modalu po podlaniu
             showPlantDetails(plantId);
+        });
+        
+        // Obsługa przycisku usuwania rośliny
+        const deleteButton = modalContent.querySelector('.delete-plant');
+        deleteButton.addEventListener('click', function() {
+            const plantId = this.getAttribute('data-id');
+            if (confirm('Czy na pewno chcesz usunąć tę roślinę? Tej operacji nie można cofnąć.')) {
+                deletePlant(plantId);
+                modal.classList.remove('active');
+            }
         });
         
         // Obsługa przycisku zamykania w modalu
@@ -483,8 +678,16 @@ function getEventsForDay(year, month, day) {
         const events = [];
         const checkDate = new Date(year, month, day);
         
+        console.log('getEventsForDay - data sprawdzania:', checkDate);
+        console.log('getEventsForDay - pobrane rośliny:', plants);
+        
         if (!plants || !Array.isArray(plants)) {
             console.error('Nie znaleziono roślin lub dane są nieprawidłowe');
+            return [];
+        }
+        
+        if (plants.length === 0) {
+            console.log('Brak roślin do sprawdzenia wydarzeń');
             return [];
         }
         
@@ -542,6 +745,7 @@ function getEventsForDay(year, month, day) {
             }
         });
         
+        console.log('getEventsForDay - znalezione wydarzenia:', events);
         return events;
     } catch (error) {
         console.error('Błąd podczas pobierania wydarzeń:', error);
@@ -580,6 +784,7 @@ function generateCalendar(containerId) {
 
         // Utwórz tabelę kalendarza
         const table = document.createElement('table');
+        table.className = 'calendar-table'; // Dodajemy klasę dla tabeli
         container.appendChild(table);
 
         // Utwórz nagłówek tabeli
@@ -639,17 +844,17 @@ function generateCalendar(containerId) {
             dayCell.dataset.month = month;
             dayCell.dataset.year = year;
             
-            // Sprawdź, czy na ten dzień przypada jakieś wydarzenie
-            const events = getEventsForDay(year, month, day);
-            
             // Dodaj numer dnia
             const dayNumber = document.createElement('div');
             dayNumber.className = 'day-number';
             dayNumber.textContent = day;
             dayCell.appendChild(dayNumber);
             
+            // Sprawdź, czy na ten dzień przypada jakieś wydarzenie
+            const events = getEventsForDay(year, month, day);
+            
             // Dodaj ikony wydarzeń, jeśli istnieją
-            if (events.length > 0) {
+            if (events && events.length > 0) { // Dodajemy sprawdzenie, czy events istnieje
                 dayCell.classList.add('has-event');
                 
                 const hasWatering = events.some(e => e.type === 'watering');

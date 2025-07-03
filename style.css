@@ -188,11 +188,17 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     min-height: 300px;
   }
-  .calendar-placeholder table {
+  .calendar-placeholder table, .calendar-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 3px;
     margin-top: 15px;
+    display: table;
+  }
+  
+  .calendar-table {
+    display: table;
+    width: 100%;
   }
   .calendar-placeholder th,
   .calendar-placeholder td {

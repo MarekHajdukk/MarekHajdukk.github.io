@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OgroDeck - Strona Główna</title>
+  <title>OgróDeck - Strona Główna</title>
   <link rel="stylesheet" href="style.css" />
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="logo"><i class="fas fa-seedling"></i> OgroDeck</div>
+    <div class="logo"><i class="fas fa-seedling"></i> OgróDeck</div>
     <nav>
       <a href="home.html" class="tab-link active"><i class="fas fa-home"></i> Strona główna</a>
       <a href="plants.html" class="tab-link"><i class="fas fa-leaf"></i> Moje rośliny</a>
@@ -31,7 +31,7 @@
         <div class="user-menu">Zalogowany jako: <strong>Admin</strong> <a href="login.html" class="logout-link">Wyloguj</a></div>
       </header>
       <div class="section">
-        <h2 class="section-title"><i class="fas fa-cloud-sun"></i>Dzisiaj w <span id="weather-location-display">Twojej Lokalizacji</span></h2>
+        <h2 class="section-title"><i class="fas fa-cloud-sun"></i>Dzisiaj w  <span id="weather-location-display">Twojej Lokalizacji</span></h2>
         <div class="weather-info" id="weather-widget-placeholder">
             <i class="fas fa-spinner fa-spin weather-icon-main"></i>
             <div class="details" style="margin-left:0;">Ładowanie danych pogodowych...</div>
@@ -49,18 +49,10 @@
       </div>
       <div class="section">
         <h2 class="section-title"><i class="fas fa-bell"></i>Przypomnienia</h2>
-        <ul class="reminders">
+        <ul class="reminders" id="notifications-container">
+          <!-- Tutaj będą dynamicznie generowane powiadomienia -->
           <li class="reminder-item">
-            <div><i class="fas fa-tint reminder-icon"></i> Podlej Monsterę o 18:00</div>
-            <button class="button secondary small">Zrobione</button>
-          </li>
-          <li class="reminder-item">
-            <div><i class="fas fa-prescription-bottle-alt reminder-icon"></i> Nawożenie paprotki w tym tygodniu</div>
-            <button class="button secondary small">Zrobione</button>
-          </li>
-          <li class="reminder-item">
-            <div><i class="fas fa-exchange-alt reminder-icon"></i> Przesadzenie fikusa – za 3 dni</div>
-            <button class="button secondary small">Zrobione</button>
+            <div>Ładowanie powiadomień...</div>
           </li>
         </ul>
       </div>
@@ -84,6 +76,13 @@
         return;
       }
       
+      // Wyświetl nazwę zalogowanego użytkownika
+      const username = sessionStorage.getItem('username') || 'Admin';
+      const usernameDisplay = document.querySelector('.user-menu strong');
+      if (usernameDisplay) {
+        usernameDisplay.textContent = username;
+      }
+      
       // Aktualizacja daty
       showCurrentDate('today-date');
       
@@ -95,6 +94,11 @@
       setTimeout(() => {
         generateCalendar('calendar-home');
       }, 100);
+      
+      // Wyświetl powiadomienia
+      setTimeout(() => {
+        displayNotifications();
+      }, 200);
       
       // Obsługa wylogowania
       document.querySelector('.logout-link').addEventListener('click', (e) => {
