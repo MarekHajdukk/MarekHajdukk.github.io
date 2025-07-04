@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OgróDeck - Społeczność</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script defer src="script.js"></script>
+  <script defer src="community.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo"><i class="fas fa-seedling"></i> OgróDeck</div>
+    <nav>
+      <a href="home.html" class="tab-link"><i class="fas fa-home"></i> Strona główna</a>
+      <a href="plants.html" class="tab-link"><i class="fas fa-leaf"></i> Moje rośliny</a>
+      <a href="calendar.html" class="tab-link"><i class="fas fa-calendar-alt"></i> Kalendarz</a>
+      <a href="community.html" class="tab-link active"><i class="fas fa-users"></i> Społeczność</a>
+      <a href="settings.html" class="tab-link"><i class="fas fa-cog"></i> Ustawienia</a>
+    </nav>
+  </aside>
+
+  <div class="main-content-wrapper">
+    <div class="container" id="community" style="display: block;">
+      <header class="page-header">
+        <h2><i class="fas fa-users"></i>Społeczność</h2>
+        <div class="user-menu">Zalogowany jako: <strong>Admin</strong> <a href="login.html" class="logout-link">Wyloguj</a></div>
+      </header>
+      
+      <div class="section">
+        <h2 class="section-title"><i class="fas fa-plus-circle"></i>Dodaj nowy post</h2>
+        <form id="post-form" class="post-form">
+          <div class="form-row">
+            <textarea id="post-content" name="post-content" maxlength="200" placeholder="Co słychać w Twoim ogrodzie? (max 200 znaków)" required></textarea>
+            <div class="character-counter"><span id="char-count">0</span>/200</div>
+          </div>
+          <div class="form-row">
+            <label for="post-image" class="file-input-label">
+              <i class="fas fa-image"></i> Dodaj zdjęcie (opcjonalnie)
+              <input type="file" id="post-image" name="post-image" accept="image/*" class="file-input">
+            </label>
+            <div id="image-preview-container" class="image-preview-container" style="display: none;">
+              <img id="image-preview" src="#" alt="Podgląd zdjęcia">
+              <button type="button" id="remove-image" class="remove-image"><i class="fas fa-times"></i></button>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="button"><i class="fas fa-paper-plane"></i> Opublikuj</button>
+          </div>
+        </form>
+      </div>
+      
+      <div class="section">
+        <h2 class="section-title"><i class="fas fa-stream"></i>Posty społeczności</h2>
+        <div id="posts-container" class="posts-container">
+          <!-- Posty będą generowane dynamicznie przez JavaScript -->
+          <div class="no-posts-message">Ładowanie postów...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Sprawdź, czy użytkownik jest zalogowany
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+      if (!isLoggedIn) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Wyświetl nazwę zalogowanego użytkownika
+      const username = sessionStorage.getItem('username') || 'Admin';
+      const usernameDisplay = document.querySelector('.user-menu strong');
+      if (usernameDisplay) {
+        usernameDisplay.textContent = username;
+      }
+      
+      // Inicjalizacja funkcji społeczności
+      initCommunityFeatures();
+      
+      // Obsługa wylogowania
+      document.querySelector('.logout-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('username');
+        window.location.href = 'login.html';
+      });
+    });
+  </script>
+</body>
+</html>
