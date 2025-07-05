@@ -401,6 +401,7 @@ function setupPostForm() {
     postForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
+        // Sprawdź, czy treść posta nie jest pusta przed dodaniem posta
         if (postContent.value.trim() === '') {
             alert('Treść posta nie może być pusta!');
             return;
@@ -413,17 +414,19 @@ function setupPostForm() {
         
         addPost(postContent.value, imageData);
         
-        // Resetuj formularz
-        postContent.value = '';
-        charCount.textContent = '0';
-        charCount.style.color = '';
-        if (imageUpload) imageUpload.value = '';
-        if (imagePreviewContainer) {
-            imagePreviewContainer.style.display = 'none';
-        }
-        if (imagePreview) {
-            imagePreview.src = '#';
-        }
+        // Resetuj formularz po dodaniu posta
+        setTimeout(() => {
+            postContent.value = '';
+            charCount.textContent = '0';
+            charCount.style.color = '';
+            if (imageUpload) imageUpload.value = '';
+            if (imagePreviewContainer) {
+                imagePreviewContainer.style.display = 'none';
+            }
+            if (imagePreview) {
+                imagePreview.src = '#';
+            }
+        }, 100);
     });
 }
 

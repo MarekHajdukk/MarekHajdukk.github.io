@@ -1,0 +1,16 @@
+# Ignorowanie plików LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Ignorowanie plików dokumentacji
+dokumentacja_prototypu.tex
+dokumentacja_prototypu.pdf
+raport_testow_uzytecznosci.tex
+raport_testow_uzytecznosci.pdf

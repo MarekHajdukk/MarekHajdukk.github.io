@@ -615,9 +615,8 @@ form button[type="submit"] {
 }
 
 .post-form textarea {
-    resize: vertical;
-    min-height: 80px;
-    max-height: 200px;
+    resize: none;
+    height: 120px;
 }
 
 .character-counter {

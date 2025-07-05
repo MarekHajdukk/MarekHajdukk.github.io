@@ -196,7 +196,6 @@ function fertilizePlant(plantId) {
         plants[plantIndex].lastFertilized = new Date().toISOString();
         savePlants(plants);
         renderPlantCards(); // Odśwież karty
-        alert(`Roślina ${plants[plantIndex].name} została nawożona!`);
     }
 }
 
@@ -295,7 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
             plants[plantIndex].lastWatered = new Date().toISOString();
             savePlants(plants);
             renderPlantCards(); // Odśwież karty
-            alert(`Roślina ${plants[plantIndex].name} została podlana!`);
         }
     }
     
@@ -309,7 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
             plants.splice(plantIndex, 1);
             savePlants(plants);
             renderPlantCards(); // Odśwież karty
-            alert(`Roślina ${plantName} została usunięta!`);
         }
     }
 
@@ -373,6 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="plant-details-actions">
                     <button class="button edit-plant" data-id="${plant.id}"><i class="fas fa-edit"></i> Edytuj</button>
                     <button class="button secondary water-plant" data-id="${plant.id}"><i class="fas fa-tint"></i> Podlej</button>
+                    <button class="button secondary fertilize-plant" data-id="${plant.id}"><i class="fas fa-prescription-bottle-alt"></i> Nawóź</button>
                     <button class="button danger delete-plant" data-id="${plant.id}"><i class="fas fa-trash"></i> Usuń</button>
                     <button class="button modal-close-btn"><i class="fas fa-times"></i> Zamknij</button>
                 </div>
@@ -490,6 +488,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const plantId = this.getAttribute('data-id');
             waterPlant(plantId);
             // Odśwież zawartość modalu po podlaniu
+            showPlantDetails(plantId);
+        });
+        
+        // Obsługa przycisku nawożenia w modalu
+        const fertilizeButton = modalContent.querySelector('.fertilize-plant');
+        fertilizeButton.addEventListener('click', function() {
+            const plantId = this.getAttribute('data-id');
+            fertilizePlant(plantId);
+            // Odśwież zawartość modalu po nawożeniu
             showPlantDetails(plantId);
         });
         
@@ -640,14 +647,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const userSettingsForm = document.getElementById('user-settings-form');
     userSettingsForm?.addEventListener('submit', (e) => {
         e.preventDefault();
-        alert('Ustawienia użytkownika zapisane (symulacja).');
         // Tutaj logika zapisu danych
     });
 
     const passwordChangeForm = document.getElementById('password-change-form');
     passwordChangeForm?.addEventListener('submit', (e) => {
         e.preventDefault();
-        alert('Hasło zmienione (symulacja).');
         // Tutaj logika zmiany hasła
     });
 
